@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>$(DEVELOPMENT_LANGUAGE)</string>
+        <key>CFBundleDisplayName</key>
+        <string>Log Cam Pro</string>
+        <key>CFBundleExecutable</key>
+        <string>$(EXECUTABLE_NAME)</string>
+        <key>CFBundleIdentifier</key>
+        <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+        <key>CFBundleName</key>
+        <string>$(PRODUCT_NAME)</string>
+        <key>CFBundlePackageType</key>
+        <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+        <key>CFBundleShortVersionString</key>
+        <string>1.0</string>
+        <key>CFBundleVersion</key>
+        <string>1</string>
+        <key>LSRequiresIPhoneOS</key>
+        <true/>
+        <key>UIApplicationSceneManifest</key>
+        <dict>
+                <key>UIApplicationSupportsMultipleScenes</key>
+                <false/>
+                <key>UISceneConfigurations</key>
+                <dict>
+                        <key>UIWindowSceneSessionRoleApplication</key>
+                        <array>
+                                <dict>
+                                        <key>UISceneConfigurationName</key>
+                                        <string>Default Configuration</string>
+                                        <key>UISceneDelegateClassName</key>
+                                        <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+                                </dict>
+                        </array>
+                </dict>
+        </dict>
+        <key>UILaunchStoryboardName</key>
+        <string>LaunchScreen</string>
+        <key>UISupportedInterfaceOrientations</key>
+        <array>
+                <string>UIInterfaceOrientationLandscapeLeft</string>
+                <string>UIInterfaceOrientationLandscapeRight</string>
+        </array>
+        <key>UISupportedInterfaceOrientations~ipad</key>
+        <array>
+                <string>UIInterfaceOrientationLandscapeLeft</string>
+                <string>UIInterfaceOrientationLandscapeRight</string>
+        </array>
+        <key>NSCameraUsageDescription</key>
+        <string>Log Cam Pro needs camera access to capture RAW/log video with professional controls.</string>
+        <key>NSMicrophoneUsageDescription</key>
+        <string>Log Cam Pro records audio synchronized with your video.</string>
+        <key>NSPhotoLibraryUsageDescription</key>
+        <string>Log Cam Pro saves recorded clips to your photo library.</string>
+        <key>NSPhotoLibraryAddUsageDescription</key>
+        <string>Log Cam Pro saves recorded clips to your photo library.</string>
+        <key>NSBluetoothAlwaysUsageDescription</key>
+        <string>Log Cam Pro uses Bluetooth to connect external wireless microphones and remote controls.</string>
+        <key>NSLocalNetworkUsageDescription</key>
+        <string>Log Cam Pro can stream monitoring previews to local network devices.</string>
+        <key>NSMotionUsageDescription</key>
+        <string>Log Cam Pro records gyroscope and accelerometer data for post-production stabilization in Gyroflow.</string>
+        <key>UIFileSharingEnabled</key>
+        <true/>
+        <key>LSSupportsOpeningDocumentsInPlace</key>
+        <true/>
+        <key>CFBundleDocumentTypes</key>
+        <array>
+                <dict>
+                        <key>CFBundleTypeName</key>
+                        <string>3D LUT Cube</string>
+                        <key>CFBundleTypeRole</key>
+                        <string>Editor</string>
+                        <key>LSHandlerRank</key>
+                        <string>Owner</string>
+                        <key>LSItemContentTypes</key>
+                        <array>
+                                <string>com.logcampro.cube</string>
+                        </array>
+                </dict>
+        </array>
+        <key>UTExportedTypeDeclarations</key>
+        <array>
+                <dict>
+                        <key>UTTypeIdentifier</key>
+                        <string>com.logcampro.cube</string>
+                        <key>UTTypeDescription</key>
+                        <string>3D LUT Cube File</string>
+                        <key>UTTypeConformsTo</key>
+                        <array>
+                                <string>public.data</string>
+                                <string>public.text</string>
+                        </array>
+                        <key>UTTypeTagSpecification</key>
+                        <dict>
+                                <key>public.filename-extension</key>
+                                <array>
+                                        <string>cube</string>
+                                </array>
+                                <key>public.mime-type</key>
+                                <array>
+                                        <string>text/plain</string>
+                                </array>
+                        </dict>
+                </dict>
+        </array>
+        <key>ITSAppUsesNonExemptEncryption</key>
+        <false/>
+        <key>UIRequiredDeviceCapabilities</key>
+        <array>
+                <string>arm64</string>
+                <string>video-camera</string>
+        </array>
+        <key>UIViewControllerBasedStatusBarAppearance</key>
+        <false/>
+        <key>UIStatusBarHidden</key>
+        <true/>
+        <key>UIHideStatusBarDuringLaunch</key>
+        <false/>
+        <key>CADisableMinimumFrameDurationOnPhone</key>
+        <true/>
+</dict>
+</plist>

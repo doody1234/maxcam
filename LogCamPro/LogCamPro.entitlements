@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+        <!--
+        Empty entitlements for free Apple ID sideloading via AltStore/Sideloadly.
+        The previous com.apple.developer.audio-system-routing and
+        com.apple.developer.external-accessory-wireless-configuration keys
+        require a paid Apple Developer account and were causing amfid to
+        kill the app at launch. Removing them lets the binary self-consistent
+        with the minimal entitlements set AltStore/Sideloadly provisions.
+        -->
+</dict>
+</plist>

@@ -1,0 +1,134 @@
+# Build Log Cam Pro for iOS using GitHub-hosted macOS runner.
+#
+# This workflow compiles the Xcode project on a Mac in the cloud (free for public
+# repos), signs it with whatever Apple Developer certificate you provide as repo
+# secrets, and uploads the resulting .ipa as a build artifact that you can
+# download from any web browser — including Windows.
+#
+# REQUIRED REPO SECRETS (Settings → Secrets and variables → Actions):
+#   - P12_BASE64            : base64 of your Apple Developer certificate (.p12)
+#   - P12_PASSWORD          : password for the .p12
+#   - PROVISIONING_PROFILE  : base64 of your .mobileprovision file
+#   - KEYCHAIN_PASSWORD     : any random string (used internally)
+#
+# If you do NOT have an Apple Developer Program membership ($99/year), set
+# `SIGN_APP: false` below — the workflow will produce an unsigned .ipa that
+# you then sideload via AltStore or Sideloadly on Windows using your free Apple ID.
+
+name: Build iOS
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  XCODE_PROJECT: LogCamPro.xcodeproj
+  SCHEME: LogCamPro
+  CONFIGURATION: Release
+  # Set to "true" to sign with your Apple Developer cert; "false" to produce an
+  # unsigned .ipa for AltStore/Sideloadly sideloading with a free Apple ID.
+  SIGN_APP: "false"
+  BUNDLE_ID: com.logcampro.app
+
+jobs:
+  build:
+    name: Build on macOS runner
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          xcodebuild -version
+
+      - name: Install dependencies (none — pure AVFoundation + Metal)
+        run: echo "No SPM/CocoaPods deps."
+
+      - name: Configure code signing
+        if: env.SIGN_APP == 'true'
+        run: |
+          # Create a temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security set-keychain-settings -t 3600 build.keychain
+
+          # Import the developer certificate
+          echo "$P12_BASE64" | base64 --decode > cert.p12
+          security import cert.p12 -k build.keychain -P "$P12_PASSWORD" -T /usr/bin/codesign
+
+          # Provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/build.mobileprovision
+
+          # Allow codesign to access the keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+        env:
+          P12_BASE64: ${{ secrets.P12_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      - name: Build (unsigned)
+        if: env.SIGN_APP == 'false'
+        run: |
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration "$CONFIGURATION" \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=NO \
+            GCC_TREAT_WARNINGS_AS_ERRORS=NO
+
+      - name: Build (signed)
+        if: env.SIGN_APP == 'true'
+        run: |
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration "$CONFIGURATION" \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="Apple Development" \
+            DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM_ID }}" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=NO \
+            GCC_TREAT_WARNINGS_AS_ERRORS=NO
+
+      - name: Package .ipa
+        run: |
+          mkdir -p Payload
+          APP_PATH=$(find build/Build/Products -name "LogCamPro.app" -type d | head -1)
+          cp -R "$APP_PATH" Payload/
+          zip -r LogCamPro.ipa Payload
+          ls -lh LogCamPro.ipa
+
+      - name: Upload .ipa artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LogCamPro-ipa
+          path: LogCamPro.ipa
+          retention-days: 30
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            build/Logs/**/*.log
+            *.log
+          retention-days: 7
